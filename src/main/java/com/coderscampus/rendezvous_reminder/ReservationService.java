@@ -1,4 +1,4 @@
-package service;
+package com.coderscampus.rendezvous_reminder;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
