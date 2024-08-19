@@ -13,16 +13,17 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ReservationService {
     private final String url = "https://methowreservations.com/lodging/huts"; // Hardcoded URL
-    private final LocalDate startDate = LocalDate.of(2024, 12, 13);  // Hardcoded start date
-    private final LocalDate endDate = LocalDate.of(2025, 3, 15);  // Hardcoded end date
 
-    public boolean spotsAvailableInRange(LocalDate startDate, LocalDate endDate) {
+    public List<LocalDate> getAvailableDatesInRange(LocalDate startDate, LocalDate endDate) {
         WebDriver driver = new ChromeDriver();
+        List<LocalDate> availableDates = new ArrayList<>();
+
         try {
             driver.get(url);
 
@@ -32,10 +33,10 @@ public class ReservationService {
             select.selectByVisibleText("Winter 2024-2025");
 
             // Wait for the table to update based on the dropdown selection
-            Thread.sleep(5000); // Wait for 2 seconds (or more if needed) to allow the table to refresh
+            Thread.sleep(5000); // Wait for 5 seconds (or adjust as needed) to allow the table to refresh
 
             // Locate the table and iterate through dates
-            WebElement table = driver.findElement(By.tagName("table")); // Replace with the actual table ID or locator
+            WebElement table = driver.findElement(By.tagName("table")); // Replace with the actual table locator
             List<WebElement> rows = table.findElements(By.tagName("tr"));
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -56,18 +57,17 @@ public class ReservationService {
                         });
 
                 if (spotFound) {
-                    return true; // A spot is available on this date
+                    availableDates.add(date); // Add the date to the list if a spot is available
                 }
             }
 
-            return false; // No spots available in the entire range
-
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         } finally {
             driver.quit(); // Always quit the WebDriver to close the browser
         }
+
+        return availableDates; // Return the list of available dates
     }
 }
 
