@@ -35,29 +35,24 @@ public class ReservationService {
             // Wait for the table to update based on the dropdown selection
             Thread.sleep(5000); // Wait for 5 seconds (or adjust as needed) to allow the table to refresh
 
-            // Locate the table and iterate through dates
-            WebElement table = driver.findElement(By.tagName("table")); // Replace with the actual table locator
-            List<WebElement> rows = table.findElements(By.tagName("tr"));
+            WebElement matrixScrollDiv = driver.findElement(By.id("matrixScroll"));
+            WebElement dateTable = matrixScrollDiv.findElement(By.tagName("table"));
+            List<WebElement> dateCells = dateTable.findElements(By.tagName("td"));
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d");
 
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                 String formattedDate = date.format(formatter);
 
-                boolean spotFound = rows.stream()
-                        .flatMap(row -> row.findElements(By.tagName("td")).stream())
+                boolean spotFound = dateCells.stream()
                         .anyMatch(td -> {
-                            String className = td.getAttribute("class");
-                            if ("vacant".equals(className)) {
-                                WebElement div = td.findElement(By.tagName("div"));
-                                String divId = div.getAttribute("id");
-                                return formattedDate.equals(divId);
-                            }
-                            return false;
+                            WebElement span = td.findElement(By.tagName("span"));
+                            String cellDate = span.getText().trim();
+                            return cellDate.equals(formattedDate) && td.getAttribute("class").contains("vacant");
                         });
 
                 if (spotFound) {
-                    availableDates.add(date); // Add the date to the list if a spot is available
+                    availableDates.add(date);
                 }
             }
 
