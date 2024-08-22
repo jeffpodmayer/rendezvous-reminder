@@ -26,6 +26,7 @@ public class AvailabilityChecker {
             System.out.println("Available spots on the following dates:");
             for (LocalDate date : availableDates) {
                 System.out.println(date);
+                System.out.flush();
             }
         }
     }
