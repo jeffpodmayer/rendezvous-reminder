@@ -16,10 +16,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ReservationService {
@@ -100,56 +97,47 @@ public class ReservationService {
             // Find the table
             WebElement table = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("table")));
 
-            // Find the <span> containing all hut names
-            WebElement span = table.findElement(By.cssSelector("span.rooms"));
-
-            // Find all hut name divs within the <span>
-            List<WebElement> hutNameElements = span.findElements(By.cssSelector("div.name"));
-
-            // Debugging: Print all hut names found
-            System.out.println("Hut Names Found:");
-            for (WebElement hutNameElement : hutNameElements) {
-                String hutName = hutNameElement.getText().trim();
-                System.out.println("  - " + hutName);
-                hutAvailabilityMap.putIfAbsent(hutName, new ArrayList<>());
-            }
-
             // Find all rows in the table
             List<WebElement> rows = table.findElements(By.tagName("tr"));
 
-            // Iterate through the rows to find hut availability
             for (WebElement row : rows) {
                 // Find all cells in the row
                 List<WebElement> cells = row.findElements(By.tagName("td"));
 
                 if (cells.size() > 1) { // Ensure there's more than one cell in the row
-                    // Process each cell starting from index 1 (to skip the hut name cell)
-                    for (int j = 1; j < cells.size(); j++) {
-                        WebElement cell = cells.get(j);
+                    try {
+                        // Get the hut name from the first cell
+                        WebElement hutNameElement = cells.get(0).findElement(By.cssSelector(".name"));
+                        String hutName = hutNameElement.getText().trim();
 
-                        if (cell.getAttribute("class").contains("vacant")) {
-                            WebElement div = cell.findElement(By.tagName("div"));
-                            WebElement input = div.findElement(By.tagName("input"));
-                            String inputId = input.getAttribute("id");
+                        // Initialize the list of available dates for this hut if not already present
+                        hutAvailabilityMap.putIfAbsent(hutName, new ArrayList<>());
 
-                            // Extract date from inputId and parse it
-                            String[] parts = inputId.split("_");
-                            if (parts.length >= 2) {
-                                String extractedDate = parts[0] + "_" + parts[1];
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMMd_yyyy");
-                                LocalDate date = LocalDate.parse(extractedDate, formatter);
+                        // Process each cell starting from index 1 (to skip the hut name cell)
+                        for (int j = 1; j < cells.size(); j++) {
+                            WebElement cell = cells.get(j);
 
-                                if (!date.isBefore(startDate) && !date.isAfter(endDate)) {
-                                    // Find hut names in this cell's context and add dates
-                                    for (WebElement hutNameElement : hutNameElements) {
-                                        String hutName = hutNameElement.getText().trim();
-                                        if (hutAvailabilityMap.containsKey(hutName)) {
-                                            hutAvailabilityMap.get(hutName).add(date);
-                                        }
+                            if (cell.getAttribute("class").contains("vacant")) {
+                                WebElement div = cell.findElement(By.tagName("div"));
+                                WebElement input = div.findElement(By.tagName("input"));
+                                String inputId = input.getAttribute("id");
+
+                                // Extract date from inputId and parse it
+                                String[] parts = inputId.split("_");
+                                if (parts.length >= 2) {
+                                    String extractedDate = parts[0] + "_" + parts[1];
+                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMMd_yyyy");
+                                    LocalDate date = LocalDate.parse(extractedDate, formatter);
+
+                                    if (!date.isBefore(startDate) && !date.isAfter(endDate)) {
+                                        hutAvailabilityMap.get(hutName).add(date);
                                     }
                                 }
                             }
                         }
+                    } catch (NoSuchElementException e) {
+                        // Handle the case where the hut name element is not found in this row
+                        System.out.println("Error processing row: " + e.getMessage());
                     }
                 }
             }

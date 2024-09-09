@@ -24,9 +24,19 @@ public class AvailabilityChecker {
         if (hutAvailabilityMap.isEmpty()) {
             System.out.println("No spots available within the date range.");
         } else {
-            System.out.println("Available huts:");
-            for (String hutName : hutAvailabilityMap.keySet()) {
-                System.out.println(hutName);
+            System.out.println("Available spots by hut:");
+            for (Map.Entry<String, List<LocalDate>> entry : hutAvailabilityMap.entrySet()) {
+                String hutName = entry.getKey();
+                List<LocalDate> dates = entry.getValue();
+
+                if (!dates.isEmpty()) {
+                    System.out.println(hutName + ":");
+                    for (LocalDate date : dates) {
+                        System.out.println("  - " + date);
+                    }
+                } else {
+                    System.out.println(hutName + ": No available dates");
+                }
             }
         }
     }
