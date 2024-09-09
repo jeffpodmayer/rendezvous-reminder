@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -100,44 +101,63 @@ public class ReservationService {
             // Find all rows in the table
             List<WebElement> rows = table.findElements(By.tagName("tr"));
 
-            for (WebElement row : rows) {
-                // Find all cells in the row
+            if (rows.size() < 2) {
+                throw new RuntimeException("Table rows are less than expected.");
+            }
+
+            // Get the hut names from the first row
+            WebElement hutNamesRow = rows.get(0).findElement(By.cssSelector("td span.rooms"));
+            List<WebElement> hutNameElements = hutNamesRow.findElements(By.cssSelector("div.name"));
+
+            // Extract hut names
+            List<String> hutNames = new ArrayList<>();
+            for (WebElement hutNameElement : hutNameElements) {
+                hutNames.add(hutNameElement.getText().trim());
+            }
+
+            // Ensure there are enough hut names for the remaining rows
+//            if (rows.size() - 1 != hutNames.size()) {
+//                throw new RuntimeException("Mismatch between number of rows and hut names." + rows.size() + hutNames.size());
+//            }
+
+            // Iterate through the remaining rows
+            for (int i = 1; i < rows.size(); i++) { // Skip the first row with hut names
+                WebElement row = rows.get(i);
                 List<WebElement> cells = row.findElements(By.tagName("td"));
 
-                if (cells.size() > 1) { // Ensure there's more than one cell in the row
-                    try {
-                        // Get the hut name from the first cell
-                        WebElement hutNameElement = cells.get(0).findElement(By.cssSelector(".name"));
-                        String hutName = hutNameElement.getText().trim();
+//                if (cells.size() != hutNames.size()) {
+//                    throw new RuntimeException("Mismatch between number of cells and hut names.");
+//                }
 
-                        // Initialize the list of available dates for this hut if not already present
-                        hutAvailabilityMap.putIfAbsent(hutName, new ArrayList<>());
+                // Extract the hut name for the current row
+                String hutName = hutNames.get(i - 1); // -1 to account for header row
 
-                        // Process each cell starting from index 1 (to skip the hut name cell)
-                        for (int j = 1; j < cells.size(); j++) {
-                            WebElement cell = cells.get(j);
+                // Process each cell in the row
+                for (int j = 0; j < cells.size(); j++) {
+                    WebElement cell = cells.get(j);
 
-                            if (cell.getAttribute("class").contains("vacant")) {
-                                WebElement div = cell.findElement(By.tagName("div"));
-                                WebElement input = div.findElement(By.tagName("input"));
-                                String inputId = input.getAttribute("id");
+                    if (cell.getAttribute("class").contains("vacant")) {
+                        WebElement div = cell.findElement(By.tagName("div"));
+                        WebElement input = div.findElement(By.tagName("input"));
+                        String inputId = input.getAttribute("id");
 
-                                // Extract date from inputId and parse it
-                                String[] parts = inputId.split("_");
-                                if (parts.length >= 2) {
-                                    String extractedDate = parts[0] + "_" + parts[1];
-                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMMd_yyyy");
-                                    LocalDate date = LocalDate.parse(extractedDate, formatter);
+                        // Extract date from inputId and parse it
+                        String[] parts = inputId.split("_");
+                        if (parts.length >= 2) {
+                            String extractedDate = parts[0] + "_" + parts[1];
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMMd_yyyy");
+                            try {
+                                LocalDate date = LocalDate.parse(extractedDate, formatter);
 
-                                    if (!date.isBefore(startDate) && !date.isAfter(endDate)) {
-                                        hutAvailabilityMap.get(hutName).add(date);
-                                    }
+                                // Ensure the date is within the specified range
+                                if (!date.isBefore(startDate) && !date.isAfter(endDate)) {
+                                    hutAvailabilityMap.putIfAbsent(hutName, new ArrayList<>());
+                                    hutAvailabilityMap.get(hutName).add(date);
                                 }
+                            } catch (DateTimeParseException e) {
+                                System.err.println("Date parsing error for id: " + inputId + " - " + e.getMessage());
                             }
                         }
-                    } catch (NoSuchElementException e) {
-                        // Handle the case where the hut name element is not found in this row
-                        System.out.println("Error processing row: " + e.getMessage());
                     }
                 }
             }
@@ -151,4 +171,5 @@ public class ReservationService {
         return hutAvailabilityMap;
     }
 }
+
 
