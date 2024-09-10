@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.coderscampus.rendezvous_reminder.ReservationService;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,18 @@ public class AvailabilityChecker {
                 if (!dates.isEmpty()) {
                     System.out.println(hutName + ":");
                     for (LocalDate date : dates) {
-                        System.out.println("  - " + date);
+                        DayOfWeek dayOfWeek = date.getDayOfWeek();
+                        String formattedDay = dayOfWeek.toString();
+
+                        // Capitalize Friday, Saturday, and Sunday
+                        if (dayOfWeek == DayOfWeek.FRIDAY || dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+                            formattedDay = formattedDay.toUpperCase();  // Explicitly capitalize (it's already upper, but for clarity)
+                        } else {
+                            formattedDay = formattedDay.charAt(0) + formattedDay.substring(1).toLowerCase();  // Capitalize first letter only
+                        }
+
+                        // Print date with day of the week
+                        System.out.println("  - " + date + " (" + formattedDay + ")");
                     }
                 } else {
                     System.out.println(hutName + ": No available dates");
