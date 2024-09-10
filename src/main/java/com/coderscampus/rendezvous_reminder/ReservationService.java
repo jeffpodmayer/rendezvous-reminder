@@ -80,95 +80,69 @@ public class ReservationService {
 //        return availableDates; // Return the list of available dates
 //    }
 
-    public Map<String, List<LocalDate>> getHutAvailabilityInRange(LocalDate startDate, LocalDate endDate) {
+    public Map<String, List<LocalDate>> getAvailableDatesForHuts(LocalDate startDate, LocalDate endDate) {
         WebDriver driver = new ChromeDriver();
-        Map<String, List<LocalDate>> hutAvailabilityMap = new HashMap<>();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // Wait up to 10 seconds
+        Map<String, List<LocalDate>> hutAvailability = new HashMap<>();
+
+        // Predefined list of hut names
+        List<String> hutNames = Arrays.asList("Heifer Hut", "Rendezvous Hut", "Gardner Hut", "Cassal Hut", "Grizzly Hut");
 
         try {
             driver.get(url);
 
+            // Select the desired option in the dropdown
             WebElement dropdown = driver.findElement(By.id("seasonal_year"));
             Select select = new Select(dropdown);
             select.selectByVisibleText("Winter 2024-2025");
 
             // Wait for the table to update
-            Thread.sleep(5000); // Adjust if necessary
+            Thread.sleep(5000);
 
-            // Find the table
-            WebElement table = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("table")));
+            // Locate the table containing the availability data
+            WebElement matrixScrollDiv = driver.findElement(By.id("matrixScroll"));
+            WebElement dateTable = matrixScrollDiv.findElement(By.tagName("table"));
+            List<WebElement> rows = dateTable.findElements(By.tagName("tr"));
 
-            // Find all rows in the table
-            List<WebElement> rows = table.findElements(By.tagName("tr"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMMd_yyyy");
 
-            if (rows.size() < 2) {
-                throw new RuntimeException("Table rows are less than expected.");
-            }
-
-            // Get the hut names from the first row
-            WebElement hutNamesRow = rows.get(0).findElement(By.cssSelector("td span.rooms"));
-            List<WebElement> hutNameElements = hutNamesRow.findElements(By.cssSelector("div.name"));
-
-            // Extract hut names
-            List<String> hutNames = new ArrayList<>();
-            for (WebElement hutNameElement : hutNameElements) {
-                hutNames.add(hutNameElement.getText().trim());
-            }
-
-            // Ensure there are enough hut names for the remaining rows
-//            if (rows.size() - 1 != hutNames.size()) {
-//                throw new RuntimeException("Mismatch between number of rows and hut names." + rows.size() + hutNames.size());
-//            }
-
-            // Iterate through the remaining rows
-            for (int i = 1; i < rows.size(); i++) { // Skip the first row with hut names
-                WebElement row = rows.get(i);
+            // Iterate over each row corresponding to each hut
+            for (int i = 0; i < hutNames.size(); i++) {
+                String hutName = hutNames.get(i);
+                WebElement row = rows.get(i + 1); // Skip the first row (header row)
                 List<WebElement> cells = row.findElements(By.tagName("td"));
+                List<LocalDate> availableDates = new ArrayList<>();
 
-//                if (cells.size() != hutNames.size()) {
-//                    throw new RuntimeException("Mismatch between number of cells and hut names.");
-//                }
+                // Iterate over each cell in the row to find vacancies
+                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                    String formattedDate = date.format(formatter);
 
-                // Extract the hut name for the current row
-                String hutName = hutNames.get(i - 1); // -1 to account for header row
+                    for (WebElement cell : cells) {
+                        if (cell.getAttribute("class").contains("vacant")) {
+                            WebElement div = cell.findElement(By.tagName("div"));
+                            WebElement input = div.findElement(By.tagName("input"));
+                            String inputId = input.getAttribute("id");
 
-                // Process each cell in the row
-                for (int j = 0; j < cells.size(); j++) {
-                    WebElement cell = cells.get(j);
+                            // Extract and format the date from the inputId
+                            String extractedDate = inputId.split("_")[0] + "_" + inputId.split("_")[1];
 
-                    if (cell.getAttribute("class").contains("vacant")) {
-                        WebElement div = cell.findElement(By.tagName("div"));
-                        WebElement input = div.findElement(By.tagName("input"));
-                        String inputId = input.getAttribute("id");
-
-                        // Extract date from inputId and parse it
-                        String[] parts = inputId.split("_");
-                        if (parts.length >= 2) {
-                            String extractedDate = parts[0] + "_" + parts[1];
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMMd_yyyy");
-                            try {
-                                LocalDate date = LocalDate.parse(extractedDate, formatter);
-
-                                // Ensure the date is within the specified range
-                                if (!date.isBefore(startDate) && !date.isAfter(endDate)) {
-                                    hutAvailabilityMap.putIfAbsent(hutName, new ArrayList<>());
-                                    hutAvailabilityMap.get(hutName).add(date);
-                                }
-                            } catch (DateTimeParseException e) {
-                                System.err.println("Date parsing error for id: " + inputId + " - " + e.getMessage());
+                            // If the extractedDate matches the formatted date, add the date to the list
+                            if (formattedDate.equals(extractedDate)) {
+                                availableDates.add(date);
                             }
                         }
                     }
                 }
+
+                hutAvailability.put(hutName, availableDates);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            driver.quit();
+            driver.quit(); // Always quit the WebDriver to close the browser
         }
 
-        return hutAvailabilityMap;
+        return hutAvailability;
     }
 }
 

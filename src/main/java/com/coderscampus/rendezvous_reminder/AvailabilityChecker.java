@@ -19,7 +19,7 @@ public class AvailabilityChecker {
         final LocalDate endDate = LocalDate.of(2025, 3, 15);  // Hardcoded end date
 
         // Get the map of available dates grouped by huts
-        Map<String, List<LocalDate>> hutAvailabilityMap = reservationService.getHutAvailabilityInRange(startDate, endDate);
+        Map<String, List<LocalDate>> hutAvailabilityMap = reservationService.getAvailableDatesForHuts(startDate, endDate);
 
         if (hutAvailabilityMap.isEmpty()) {
             System.out.println("No spots available within the date range.");
