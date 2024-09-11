@@ -14,7 +14,7 @@ public class EmailService {
         // Email details
         String host = "smtp.gmail.com";
         String from = "jeff.podmayer@gmail.com";
-        String to = "recipient-email@example.com";
+        String to = "jeff.podmayer@gmail.com";
         String username = "jeff.podmayer@gmail.com";
         String password = "aado esqf vool omzr"; // Use your app password
 
