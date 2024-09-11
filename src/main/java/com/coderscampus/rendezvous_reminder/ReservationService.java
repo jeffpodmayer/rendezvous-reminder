@@ -23,8 +23,6 @@ import java.util.*;
 public class ReservationService {
     private final String url = "https://methowreservations.com/lodging/huts"; // Hardcoded URL
 
-
-
     public Map<String, List<LocalDate>> getAvailableDatesForHuts(LocalDate startDate, LocalDate endDate) {
         WebDriver driver = new ChromeDriver();
         Map<String, List<LocalDate>> hutAvailability = new HashMap<>();
