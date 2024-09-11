@@ -44,7 +44,7 @@ public class AvailabilityChecker {
                         }
 
                         // Print date with day of the week
-                        System.out.println("  - " + date + " (" + formattedDay + ")");
+                        System.out.println(formattedDay + " - " + date );
                     }
                 } else {
                     System.out.println(hutName + ": No available dates");
