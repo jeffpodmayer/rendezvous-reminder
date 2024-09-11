@@ -11,14 +11,14 @@ import java.util.Properties;
 @Service
 public class EmailService {
     public void sendEmail(String subject, String content) {
-        // Replace with your email details
-        String host = "smtp.example.com"; // SMTP server
-        String from = "your-email@example.com";
+        // Email details
+        String host = "smtp.gmail.com";
+        String from = "jeff.podmayer@gmail.com";
         String to = "recipient-email@example.com";
-        String username = "your-email@example.com"; // SMTP server credentials
-        String password = "your-password";
+        String username = "jeff.podmayer@gmail.com";
+        String password = "aado esqf vool omzr"; // Use your app password
 
-        // Set up the mail server properties
+        // Set up mail server properties
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
