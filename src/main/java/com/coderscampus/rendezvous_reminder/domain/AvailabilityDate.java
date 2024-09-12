@@ -1,4 +1,4 @@
-package domain;
+package com.coderscampus.rendezvous_reminder.domain;
 
 import jakarta.persistence.*;
 

@@ -1,11 +1,11 @@
-package domain;
+package com.coderscampus.rendezvous_reminder.domain;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "huts")
 public class Hut {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
