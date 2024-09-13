@@ -19,8 +19,6 @@ public class AvailabilityDate {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "scan_timestamp", nullable = false)
-    private LocalDate scanTimestamp;
 
     // Constructors, getters, and setters
     public AvailabilityDate() {
@@ -29,7 +27,6 @@ public class AvailabilityDate {
     public AvailabilityDate(Hut hut, LocalDate date) {
         this.hut = hut;
         this.date = date;
-        this.scanTimestamp = LocalDate.now(); // Default to current date
     }
 
     public Long getId() {
@@ -56,11 +53,4 @@ public class AvailabilityDate {
         this.date = date;
     }
 
-    public LocalDate getScanTimestamp() {
-        return scanTimestamp;
-    }
-
-    public void setScanTimestamp(LocalDate scanTimestamp) {
-        this.scanTimestamp = scanTimestamp;
-    }
 }
