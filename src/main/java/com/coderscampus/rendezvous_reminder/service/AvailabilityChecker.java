@@ -57,7 +57,7 @@ public class AvailabilityChecker {
                     Hut hut = hutOpt.get();
 
                     // Retrieve previously stored availability for this hut
-                    List<AvailabilityDate> previousDates = availabilityDateRepository.findByHutAndAvailableDateBetween(hut, startDate, endDate);
+                    List<AvailabilityDate> previousDates = availabilityDateRepository.findByHutAndDateBetween(hut, startDate, endDate);
 
                     if (!newDates.isEmpty()) {
                         System.out.println(hutName + ":");

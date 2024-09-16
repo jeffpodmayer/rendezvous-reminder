@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface AvailabilityDateRepository extends JpaRepository<AvailabilityDate, Long> {
-    List<AvailabilityDate> findByHutAndAvailableDateBetween(Hut hut, LocalDate startDate, LocalDate endDate);
+    List<AvailabilityDate> findByHutAndDateBetween(Hut hut, LocalDate startDate, LocalDate endDate);
 }
