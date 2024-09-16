@@ -6,6 +6,7 @@ import com.coderscampus.rendezvous_reminder.domain.Hut;
 import com.coderscampus.rendezvous_reminder.repository.AvailabilityDateRepository;
 import com.coderscampus.rendezvous_reminder.repository.HutRepository;
 import com.coderscampus.rendezvous_reminder.service.ReservationService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,11 @@ public class AvailabilityChecker {
 
     @Autowired
     private AvailabilityDateRepository availabilityDateRepository;
+
+    @PostConstruct
+    public void init() {
+        checkAvailability();
+    }
 
     public void checkAvailability() {
         StringBuilder emailContent = new StringBuilder();
