@@ -1,3 +1,5 @@
+package com.coderscampus.rendezvous_reminder.service;
+
 import com.coderscampus.rendezvous_reminder.EmailService;
 import com.coderscampus.rendezvous_reminder.domain.AvailabilityDate;
 import com.coderscampus.rendezvous_reminder.domain.Hut;
