@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class AvailabilityChecker {
@@ -65,37 +66,55 @@ public class AvailabilityChecker {
                     // Retrieve previously stored availability for this hut
                     List<AvailabilityDate> previousDates = availabilityDateRepository.findByHutAndDateBetween(hut, startDate, endDate);
 
+                    List<LocalDate> previousDatesList = previousDates.stream()
+                            .map(AvailabilityDate::getDate)
+                            .toList();
+
                     if (!newDates.isEmpty()) {
                         System.out.println(hutName + ":");
                         emailContent.append(hutName).append(":\n");
 
+                        // Track newly added dates
                         for (LocalDate newDate : newDates) {
-                            // Check if this date is new compared to previous scans
-                            boolean isNew = previousDates.stream()
-                                    .noneMatch(availabilityDate -> availabilityDate.getDate().equals(newDate));
+                            boolean isNew = previousDatesList.stream()
+                                    .noneMatch(prevDate -> prevDate.equals(newDate));
 
                             DayOfWeek dayOfWeek = newDate.getDayOfWeek();
                             String formattedDay = dayOfWeek.toString();
 
-                            // Capitalize Friday, Saturday, and Sunday
                             if (dayOfWeek == DayOfWeek.FRIDAY || dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
                                 formattedDay = formattedDay.toUpperCase();
                             } else {
                                 formattedDay = formattedDay.charAt(0) + formattedDay.substring(1).toLowerCase();
                             }
 
-                            // Print date with day of the week
-                            String formattedDate = "  - " + newDate + " (" + formattedDay + ")";
+                            // Add information about added dates
+                            String formattedDate = "  - ADDED: " + newDate + " (" + formattedDay + ")";
                             System.out.println(formattedDate);
                             emailContent.append(formattedDate).append("\n");
 
-                            // Add the new available date to the DB if it didn't exist before
+                            // Save new available date if it didn't exist before
                             if (isNew) {
                                 AvailabilityDate availabilityDate = new AvailabilityDate();
                                 availabilityDate.setDate(newDate);
                                 availabilityDate.setHut(hut);
 
                                 availabilityDateRepository.save(availabilityDate);
+                            }
+                        }
+
+                        // Track removed dates
+                        for (AvailabilityDate prevDate : previousDates) {
+                            boolean isRemoved = newDates.stream()
+                                    .noneMatch(newDate -> newDate.equals(prevDate.getDate()));
+
+                            if (isRemoved) {
+                                String removedDateInfo = "  - REMOVED: " + prevDate.getDate() + " (" + prevDate.getDate().getDayOfWeek() + ")";
+                                System.out.println(removedDateInfo);
+                                emailContent.append(removedDateInfo).append("\n");
+
+                                // Optionally remove the date from the database if it is no longer available
+                                availabilityDateRepository.delete(prevDate);
                             }
                         }
                     } else {
@@ -112,4 +131,5 @@ public class AvailabilityChecker {
         // Send the email with the content
         emailService.sendEmail("Hut Availability Report", emailContent.toString());
     }
+
 }
