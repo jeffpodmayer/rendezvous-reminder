@@ -82,6 +82,8 @@ public class AvailabilityChecker {
                     // Retrieve previously stored availability for this hut
                     List<AvailabilityDate> previousDates = availabilityDateRepository.findByHutAndDateBetween(hut, startDate, endDate);
 
+                    System.out.println(previousDates);
+
                     List<LocalDate> previousDatesList = previousDates.stream()
                             .map(AvailabilityDate::getDate)
                             .toList();
