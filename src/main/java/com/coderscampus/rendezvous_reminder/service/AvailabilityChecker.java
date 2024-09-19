@@ -48,10 +48,10 @@ public class AvailabilityChecker {
     @Autowired
     private AvailabilityDateRepository availabilityDateRepository;
 
-    @PostConstruct
-    public void init() {
-        checkAvailability();
-    }
+//    @PostConstruct
+//    public void init() {
+//        checkAvailability();
+//    }
 
     public void checkAvailability() {
         StringBuilder emailContent = new StringBuilder();
