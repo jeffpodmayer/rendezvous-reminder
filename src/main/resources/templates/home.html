@@ -9,7 +9,7 @@
 <h2>Enter your email to receive changes to the Rendezvous Huts:</h2>
 <form th:action="@{/submit-email}" method="post">
     <p>Enter your email:</p>
-    <input type="email" id="email" name="email" required/>
+    <input type="email" id="email" th:field="*{emailAddress}" required/>
     <button type="submit">Sign Up</button>
 </form>
 

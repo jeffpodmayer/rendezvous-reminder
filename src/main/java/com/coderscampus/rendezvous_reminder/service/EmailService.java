@@ -1,15 +1,21 @@
-package com.coderscampus.rendezvous_reminder;
+package com.coderscampus.rendezvous_reminder.service;
 
+import com.coderscampus.rendezvous_reminder.repository.EmailRepository;
 import jakarta.mail.*;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
 @Service
 public class EmailService {
+
+    @Autowired
+    EmailRepository emailRepository;
+
     public void sendEmail(String subject, String content) {
         // Email details
         String host = "smtp.gmail.com";
@@ -55,4 +61,8 @@ public class EmailService {
             e.printStackTrace();
         }
     }
+
+    public void save(String email) {
+    }
+
 }
