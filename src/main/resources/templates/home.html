@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Rendezvous Reminder</title>
 </head>
 <body>
-    <h1>Rendezvous Reminder</h1>
-    <h2>Enter your email to recieve changes to the Rendezvous Huts:</h2>
-    <form>
-        <p>Enter your email:</p>
-        <input type="email"/>
-        <button type="submit">Sign Up</button>
-    </form>
+<h1>Rendezvous Reminder</h1>
+<h2>Enter your email to receive changes to the Rendezvous Huts:</h2>
+<form th:action="@{/submit-email}" method="post">
+    <p>Enter your email:</p>
+    <input type="email" id="email" name="email" required/>
+    <button type="submit">Sign Up</button>
+</form>
 
+<!-- Display confirmation message -->
+<!--<p th:if="${message}" th:text="${message}"></p>-->
 </body>
 </html>
