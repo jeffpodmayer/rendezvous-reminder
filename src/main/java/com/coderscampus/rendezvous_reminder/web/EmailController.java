@@ -25,10 +25,10 @@ public class EmailController {
 
     @PostMapping("/submit-email")
     public String submitEmail(@RequestParam String email){
-        Email newEmail = new Email(email);
-        newEmail.setEmailAddress(email);
-        emailService.save(email);
-        System.out.println("email submitted");
+        Email newEmail = new Email();
+        newEmail.setEmailAddress(email); // Set email address in Email entity
+        emailService.save(newEmail); // Save the entity
+        System.out.println("Email submitted: " + email);
         return "home";
     }
 }

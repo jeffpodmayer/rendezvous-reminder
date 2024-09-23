@@ -1,5 +1,6 @@
 package com.coderscampus.rendezvous_reminder.service;
 
+import com.coderscampus.rendezvous_reminder.domain.Email;
 import com.coderscampus.rendezvous_reminder.repository.EmailRepository;
 import jakarta.mail.*;
 import jakarta.mail.internet.AddressException;
@@ -62,7 +63,8 @@ public class EmailService {
         }
     }
 
-    public void save(String email) {
+    public void save(Email email) {
+        emailRepository.save(email);
     }
 
 }

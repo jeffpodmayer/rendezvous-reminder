@@ -14,13 +14,12 @@ public class Email {
 
     private String emailAddress;
 
-    public Email(String email) {
-        this.emailAddress = emailAddress;
+    public Email() {
     }
 
-
-
-
+    public Email(String email){
+        this.emailAddress = email;
+    }
     // Getters and Setters
     public Long getId() {
         return id;
