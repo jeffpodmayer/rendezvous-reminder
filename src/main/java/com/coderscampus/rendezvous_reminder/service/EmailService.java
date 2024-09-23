@@ -6,6 +6,7 @@ import jakarta.mail.*;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,5 +67,8 @@ public class EmailService {
     public void save(Email email) {
         emailRepository.save(email);
     }
-
+    @Transactional
+    public void unsubscribe(String emailAddress) {
+        emailRepository.deleteByEmailAddress(emailAddress);
+    }
 }

@@ -14,18 +14,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class EmailController {
 
     @Autowired
-    EmailService emailService;
+    private EmailService emailService;
 
     @GetMapping("/")
-    public String getHomepage(Model model){
-        model.addAttribute("email", new Email());
+    public String getHomepage(ModelMap model) {
+        model.put("signUpEmail", new Email());
+        model.put("unsubscribeEmail", new Email());
         return "home";
     }
 
     @PostMapping("/submit-email")
-    public String submitEmail(@ModelAttribute("email") Email email){
+    public String submitEmail(@ModelAttribute("signUpEmail") Email email) {
         emailService.save(email);
-        System.out.println("Email submitted: " + email.getEmailAddress());
-        return "home";
+        System.out.println("Email signed up: " + email.getEmailAddress());
+        return "redirect:/";
+    }
+
+    @PostMapping("/unsubscribe")
+    public String unsubscribeEmail(@ModelAttribute("unsubscribeEmail") Email email) {
+        emailService.unsubscribe(email.getEmailAddress());
+        System.out.println("Email unsubscribed: " + email.getEmailAddress());
+        return "redirect:/";
     }
 }
