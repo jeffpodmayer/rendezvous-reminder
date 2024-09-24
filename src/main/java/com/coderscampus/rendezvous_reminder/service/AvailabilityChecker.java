@@ -145,7 +145,7 @@ public class AvailabilityChecker {
         }
 
         // Send the email with the content
-        emailService.sendEmail("Hut Availability Report", emailContent.toString());
+//        emailService.sendAvailabilityEmail("Hut Availability Report", emailContent.toString());
     }
 
 }

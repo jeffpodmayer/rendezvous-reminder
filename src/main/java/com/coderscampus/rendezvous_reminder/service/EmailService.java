@@ -20,13 +20,12 @@ public class EmailService {
 
     public void sendWelcomeEmail(Email email) {
         String recipientEmail = email.getEmailAddress();
-        // Email details
-        String host = "smtp.gmail.com";
-        String from = "jeff.podmayer@gmail.com";
-        String username = "jeff.podmayer@gmail.com";
-        String password = "aado esqf vool omzr"; // Use your app password
 
-        Properties properties = getProperties(host);
+        Properties properties = getEmailProperties();
+        String username = properties.getProperty("mail.smtp.user");
+        String password = properties.getProperty("mail.smtp.password");
+        String from = username;
+
         Session session = getSession(properties, username, password);
 
         try {
@@ -37,9 +36,7 @@ public class EmailService {
                     "Thank you for signing up to receive cancellation reminders for the Rendezvous Huts! \n"
                     + "Best regards,\n"
                     + "The Rendezvous Reminder Team";
-
             message.setText(content);
-
             Transport.send(message);
             System.out.println("Welcome email sent successfully to " + recipientEmail);
         } catch (MessagingException e) {
@@ -50,21 +47,16 @@ public class EmailService {
     public void sendUnsubscribeEmail(Email email) {
         String recipientEmail = email.getEmailAddress();
 
-        // Email details
-        String host = "smtp.gmail.com";
-        String from = "jeff.podmayer@gmail.com";
-        String username = "jeff.podmayer@gmail.com";
-        String password = "aado esqf vool omzr"; // Use your app password
+        Properties properties = getEmailProperties();
+        String username = properties.getProperty("mail.smtp.user");
+        String password = properties.getProperty("mail.smtp.password");
+        String from = username;
 
-        Properties properties = getProperties(host);
         Session session = getSession(properties, username, password);
 
         try {
             Message message = getMessage(session, from, recipientEmail);
-            // Set the subject for the unsubscribe email
             message.setSubject("Unsubscribed from the Rendezvous Reminder");
-
-            // Create the content for the unsubscribe email
             String content =
                     "You have successfully unsubscribed from receiving cancellation reminders for the Rendezvous Huts. \n"
                             + "We're sorry to see you go, but you can always sign up again if you change your mind.\n\n"
@@ -72,8 +64,6 @@ public class EmailService {
                             + "The Rendezvous Reminder Team";
 
             message.setText(content);
-
-            // Send the message
             Transport.send(message);
             System.out.println("Unsubscribe email sent successfully to " + recipientEmail);
         } catch (MessagingException e) {
@@ -84,13 +74,11 @@ public class EmailService {
 
     public void sendAvailabilityEmail(String subject, String content, Email email) {
         String recipientEmail = email.getEmailAddress();
-        // Email details
-        String host = "smtp.gmail.com";
-        String from = "jeff.podmayer@gmail.com";
-        String username = "jeff.podmayer@gmail.com";
-        String password = "aado esqf vool omzr"; // Use your app password
+        Properties properties = getEmailProperties();
+        String username = properties.getProperty("mail.smtp.user");
+        String password = properties.getProperty("mail.smtp.password");
+        String from = username;
 
-        Properties properties = getProperties(host);
         Session session = getSession(properties, username, password);
 
         try {
@@ -120,18 +108,28 @@ public class EmailService {
         return message;
     }
 
-    private Properties getProperties(String host) {
+    public Properties getEmailProperties() {
         Properties properties = new Properties();
+        String host = "smtp.gmail.com";
+        String from = "jeff.podmayer@gmail.com";
+        String username = "jeff.podmayer@gmail.com";
+        String password = "aado esqf vool omzr"; // Use your app password
+
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.user", username);
+        properties.put("mail.smtp.password", password);
+
         return properties;
     }
+
 
     public void save(Email email) {
         emailRepository.save(email);
     }
+
     @Transactional
     public void unsubscribe(String emailAddress) {
         emailRepository.deleteByEmailAddress(emailAddress);
