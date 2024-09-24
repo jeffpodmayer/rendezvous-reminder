@@ -27,18 +27,10 @@ public class EmailService {
         String password = "aado esqf vool omzr"; // Use your app password
 
         Properties properties = getProperties(host);
-
-        // Create a session with an authenticator
-        Session session = Session.getInstance(properties, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
+        Session session = getSession(properties, username, password);
 
         try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            Message message = getMessage(session, from, recipientEmail);
 
             message.setSubject("Welcome to the Rendezvous Reminder!");
             String content =
@@ -65,19 +57,10 @@ public class EmailService {
         String password = "aado esqf vool omzr"; // Use your app password
 
         Properties properties = getProperties(host);
-
-        // Create a session with an authenticator
-        Session session = Session.getInstance(properties, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
+        Session session = getSession(properties, username, password);
 
         try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
-
+            Message message = getMessage(session, from, recipientEmail);
             // Set the subject for the unsubscribe email
             message.setSubject("Unsubscribed from the Rendezvous Reminder");
 
@@ -99,40 +82,21 @@ public class EmailService {
     }
 
 
-    public void sendEmail(String subject, String content) {
+    public void sendAvailabilityEmail(String subject, String content, Email email) {
+        String recipientEmail = email.getEmailAddress();
         // Email details
         String host = "smtp.gmail.com";
         String from = "jeff.podmayer@gmail.com";
-        String to = "jeff.podmayer@gmail.com";
         String username = "jeff.podmayer@gmail.com";
         String password = "aado esqf vool omzr"; // Use your app password
 
         Properties properties = getProperties(host);
-
-        // Create a session with an authenticator
-        Session session = Session.getInstance(properties, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
+        Session session = getSession(properties, username, password);
 
         try {
-            // Create a default MimeMessage object
-            Message message = new MimeMessage(session);
-
-            // Set From: header field of the header
-            message.setFrom(new InternetAddress(from));
-
-            // Set To: header field of the header
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-
-            // Set Subject: header field
+            Message message = getMessage(session, from, recipientEmail);
             message.setSubject(subject);
-
-            // Set the actual message
             message.setText(content);
-
-            // Send the message
             Transport.send(message);
             System.out.println("Email sent successfully.");
         } catch (MessagingException e) {
@@ -140,8 +104,23 @@ public class EmailService {
         }
     }
 
+    private Session getSession(Properties properties, String username, String password) {
+        Session session = Session.getInstance(properties, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+        return session;
+    }
+
+    private Message getMessage(Session session, String from, String recipientEmail) throws MessagingException {
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(from));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+        return message;
+    }
+
     private Properties getProperties(String host) {
-        // Set up mail server properties
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
