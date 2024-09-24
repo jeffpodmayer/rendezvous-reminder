@@ -55,6 +55,50 @@ public class EmailService {
         }
     }
 
+    public void sendUnsubscribeEmail(Email email) {
+        String recipientEmail = email.getEmailAddress();
+
+        // Email details
+        String host = "smtp.gmail.com";
+        String from = "jeff.podmayer@gmail.com";
+        String username = "jeff.podmayer@gmail.com";
+        String password = "aado esqf vool omzr"; // Use your app password
+
+        Properties properties = getProperties(host);
+
+        // Create a session with an authenticator
+        Session session = Session.getInstance(properties, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+
+            // Set the subject for the unsubscribe email
+            message.setSubject("Unsubscribed from the Rendezvous Reminder");
+
+            // Create the content for the unsubscribe email
+            String content =
+                    "You have successfully unsubscribed from receiving cancellation reminders for the Rendezvous Huts. \n"
+                            + "We're sorry to see you go, but you can always sign up again if you change your mind.\n\n"
+                            + "Best regards,\n"
+                            + "The Rendezvous Reminder Team";
+
+            message.setText(content);
+
+            // Send the message
+            Transport.send(message);
+            System.out.println("Unsubscribe email sent successfully to " + recipientEmail);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void sendEmail(String subject, String content) {
         // Email details
         String host = "smtp.gmail.com";

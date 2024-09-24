@@ -34,6 +34,7 @@ public class EmailController {
     @PostMapping("/unsubscribe")
     public String unsubscribeEmail(@ModelAttribute("unsubscribeEmail") Email email) {
         emailService.unsubscribe(email.getEmailAddress());
+        emailService.sendUnsubscribeEmail(email);
         System.out.println("Email unsubscribed: " + email.getEmailAddress());
         return "redirect:/";
     }
