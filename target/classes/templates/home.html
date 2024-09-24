@@ -6,14 +6,13 @@
 </head>
 <body>
 <h1>Rendezvous Reminder</h1>
-<h2>Enter your email to receive changes to the Rendezvous Huts:</h2>
 <form th:action="@{/submit-email}" method="post">
-    <p>Enter your email:</p>
+    <p>Enter your email to receive notfications on cancellations:</p>
     <input type="email" id="sign-up-email" th:field="*{signUpEmail.emailAddress}" required/>
     <button type="submit">Sign Up</button>
 </form>
 <form th:action="@{/unsubscribe}" method="post">
-    <p>Enter your email:</p>
+    <p>Enter your email to unsubscribe from notifications:</p>
     <input type="email" id="unsubscribe-email" th:field="*{unsubscribeEmail.emailAddress}" required/>
     <button type="submit">Unsubscribe</button>
 </form>

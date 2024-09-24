@@ -26,6 +26,7 @@ public class EmailController {
     @PostMapping("/submit-email")
     public String submitEmail(@ModelAttribute("signUpEmail") Email email) {
         emailService.save(email);
+        emailService.sendWelcomeEmail(email);
         System.out.println("Email signed up: " + email.getEmailAddress());
         return "redirect:/";
     }
