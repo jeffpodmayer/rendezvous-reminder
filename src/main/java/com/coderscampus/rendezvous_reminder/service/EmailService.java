@@ -26,12 +26,7 @@ public class EmailService {
         String username = "jeff.podmayer@gmail.com";
         String password = "aado esqf vool omzr"; // Use your app password
 
-        // Set up mail server properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "587");
+        Properties properties = getProperties(host);
 
         // Create a session with an authenticator
         Session session = Session.getInstance(properties, new Authenticator() {
@@ -41,36 +36,24 @@ public class EmailService {
         });
 
         try {
-            // Create a default MimeMessage object
             Message message = new MimeMessage(session);
-
-            // Set From: header field of the header
             message.setFrom(new InternetAddress(from));
-
-            // Set To: header field of the header
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
 
-            // Set Subject: header field
-            message.setSubject("Welcome to Reservation Spot Notifications!");
-
-            // Create the welcome content
+            message.setSubject("Welcome to the Rendezvous Reminder!");
             String content =
-                    "Thank you for signing up for email reminders for your reservation spot!\n"
-                    + "We’re excited to have you on board.\n\n"
+                    "Thank you for signing up to receive cancellation reminders for the Rendezvous Huts! \n"
                     + "Best regards,\n"
                     + "The Rendezvous Reminder Team";
 
-            // Set the actual message
             message.setText(content);
 
-            // Send the message
             Transport.send(message);
             System.out.println("Welcome email sent successfully to " + recipientEmail);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
     }
-
 
     public void sendEmail(String subject, String content) {
         // Email details
@@ -80,12 +63,7 @@ public class EmailService {
         String username = "jeff.podmayer@gmail.com";
         String password = "aado esqf vool omzr"; // Use your app password
 
-        // Set up mail server properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "587");
+        Properties properties = getProperties(host);
 
         // Create a session with an authenticator
         Session session = Session.getInstance(properties, new Authenticator() {
@@ -116,6 +94,16 @@ public class EmailService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    private Properties getProperties(String host) {
+        // Set up mail server properties
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", "587");
+        return properties;
     }
 
     public void save(Email email) {
