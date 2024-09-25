@@ -125,7 +125,6 @@ public class EmailService {
         return properties;
     }
 
-
     public void save(Email email) {
         emailRepository.save(email);
     }

@@ -1,10 +1,10 @@
 package com.coderscampus.rendezvous_reminder.service;
 
 import com.coderscampus.rendezvous_reminder.domain.AvailabilityDate;
+import com.coderscampus.rendezvous_reminder.domain.Email;
 import com.coderscampus.rendezvous_reminder.domain.Hut;
 import com.coderscampus.rendezvous_reminder.repository.AvailabilityDateRepository;
 import com.coderscampus.rendezvous_reminder.repository.HutRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,26 +13,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.coderscampus.rendezvous_reminder.domain.AvailabilityDate;
-import com.coderscampus.rendezvous_reminder.domain.Hut;
-import com.coderscampus.rendezvous_reminder.repository.AvailabilityDateRepository;
-import com.coderscampus.rendezvous_reminder.repository.HutRepository;
-import com.coderscampus.rendezvous_reminder.service.ReservationService;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
-public class AvailabilityChecker {
+public class AvailabilityService {
 
     @Autowired
     private ReservationService reservationService;
@@ -51,10 +34,9 @@ public class AvailabilityChecker {
 //        checkAvailability();
 //    }
 
-    public void checkAvailability() {
+    public void checkAvailability(Email recipientEmail) {
         StringBuilder emailContent = new StringBuilder();
 
-        System.out.println("Starting availability check...");
         final LocalDate startDate = LocalDate.of(2024, 12, 13);
         final LocalDate endDate = LocalDate.of(2025, 3, 15);
 
@@ -62,10 +44,8 @@ public class AvailabilityChecker {
         Map<String, List<LocalDate>> currentAvailabilityMap = reservationService.getAvailableDatesForHuts(startDate, endDate);
 
         if (currentAvailabilityMap.isEmpty()) {
-            System.out.println("No spots available within the date range.");
             emailContent.append("No spots available within the date range.\n");
         } else {
-            System.out.println("Available spots by hut:");
             emailContent.append("Available spots by hut:\n");
 
             for (Map.Entry<String, List<LocalDate>> entry : currentAvailabilityMap.entrySet()) {
@@ -87,7 +67,6 @@ public class AvailabilityChecker {
                             .toList();
 
                     if (!newDates.isEmpty()) {
-                        System.out.println(hutName + ":");
                         emailContent.append(hutName).append(":\n");
 
                         // Track newly added dates
@@ -134,18 +113,16 @@ public class AvailabilityChecker {
                             }
                         }
                     } else {
-                        System.out.println(hutName + ": No available dates");
                         emailContent.append(hutName).append(": No available dates\n");
                     }
                 } else {
-                    System.out.println("Hut " + hutName + " not found in the database.");
                     emailContent.append("Hut ").append(hutName).append(" not found in the database.\n");
                 }
             }
         }
 
         // Send the email with the content
-//        emailService.sendAvailabilityEmail("Hut Availability Report", emailContent.toString());
+        emailService.sendAvailabilityEmail("Hut Availability Report", emailContent.toString(), recipientEmail);
     }
 
 }
