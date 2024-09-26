@@ -4,6 +4,7 @@ import com.coderscampus.rendezvous_reminder.domain.AvailabilityDate;
 import com.coderscampus.rendezvous_reminder.domain.Email;
 import com.coderscampus.rendezvous_reminder.domain.Hut;
 import com.coderscampus.rendezvous_reminder.repository.AvailabilityDateRepository;
+import com.coderscampus.rendezvous_reminder.repository.EmailRepository;
 import com.coderscampus.rendezvous_reminder.repository.HutRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,12 +30,15 @@ public class AvailabilityService {
     @Autowired
     private AvailabilityDateRepository availabilityDateRepository;
 
+    @Autowired
+    private EmailRepository emailRepository;
+
 //    @PostConstruct
 //    public void init() {
 //        checkAvailability();
 //    }
 
-    public void checkAvailability(Email recipientEmail) {
+    public void checkAvailability() {
         StringBuilder emailContent = new StringBuilder();
 
         final LocalDate startDate = LocalDate.of(2024, 12, 13);
@@ -121,10 +125,15 @@ public class AvailabilityService {
             }
         }
 
-        // Send the email with the content
-        emailService.sendAvailabilityEmail("Hut Availability Report", emailContent.toString(), recipientEmail);
-    }
+        // Get the list of email recipients from the database (Assuming emailRepository is available)
+        List<Email> emailList = emailRepository.findAll();
 
+        // Send the email to each recipient
+        for (Email recipientEmail : emailList) {
+            emailService.sendAvailabilityEmail("Hut Availability Report", emailContent.toString(), recipientEmail);
+        }
+
+    }
 }
 
 
