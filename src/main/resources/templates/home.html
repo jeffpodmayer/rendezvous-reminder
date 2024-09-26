@@ -5,17 +5,25 @@
     <title>Rendezvous Reminder</title>
 </head>
 <body>
-<h1>Rendezvous Reminder</h1>
-<form th:action="@{/submit-email}" method="post">
+<div>
+    <h1>Rendezvous Reminder</h1>
+</div>
+<div>
+    <form th:action="@{/submit-email}" method="post">
     <p>Enter your email to receive notfications on cancellations:</p>
     <input type="email" id="sign-up-email" th:field="*{signUpEmail.emailAddress}" required/>
     <button type="submit">Sign Up</button>
-</form>
-<form th:action="@{/unsubscribe}" method="post">
-    <p>Enter your email to unsubscribe from notifications:</p>
-    <input type="email" id="unsubscribe-email" th:field="*{unsubscribeEmail.emailAddress}" required/>
-    <button type="submit">Unsubscribe</button>
-</form>
+    </form>
+</div>
+
+<div>
+    <form th:action="@{/unsubscribe}" method="post">
+        <p>Enter your email to unsubscribe from notifications:</p>
+        <input type="email" id="unsubscribe-email" th:field="*{unsubscribeEmail.emailAddress}" required/>
+        <button type="submit">Unsubscribe</button>
+    </form>
+</div>
+
 
 <!-- Display confirmation message -->
 <!--<p th:if="${message}" th:text="${message}"></p>-->
