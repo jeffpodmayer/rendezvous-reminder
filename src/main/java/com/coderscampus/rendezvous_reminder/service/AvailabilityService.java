@@ -33,11 +33,6 @@ public class AvailabilityService {
     @Autowired
     private EmailRepository emailRepository;
 
-//    @PostConstruct
-//    public void init() {
-//        checkAvailability();
-//    }
-
     public void checkAvailability() {
         StringBuilder emailContent = new StringBuilder();
 

@@ -26,6 +26,37 @@ public class ReservationService {
     @Autowired
     private AvailabilityDateRepository availabilityDateRepository;
 
+    @Autowired
+    private ReservationService reservationService;
+
+    public void initialScan() {
+        final LocalDate startDate = LocalDate.of(2024, 12, 13);
+        final LocalDate endDate = LocalDate.of(2025, 3, 15);
+
+        // Get the current availability scan
+        Map<String, List<LocalDate>> currentAvailabilityMap = getAvailableDatesForHuts(startDate, endDate);
+
+        for (Map.Entry<String, List<LocalDate>> entry : currentAvailabilityMap.entrySet()) {
+            String hutName = entry.getKey();
+            List<LocalDate> availableDates = entry.getValue();
+
+            // Retrieve or create hut entity
+            Optional<Hut> hutOpt = hutRepository.findByName(hutName);
+            Hut hut = hutOpt.orElseGet(() -> new Hut(hutName));
+
+            hutRepository.save(hut);
+
+            // Save available dates to the database
+            for (LocalDate date : availableDates) {
+                AvailabilityDate availabilityDate = new AvailabilityDate();
+                availabilityDate.setDate(date);
+                availabilityDate.setHut(hut);
+
+                availabilityDateRepository.save(availabilityDate);
+            }
+        }
+    }
+
     public Map<String, List<LocalDate>> getAvailableDatesForHuts(LocalDate startDate, LocalDate endDate) {
         WebDriver driver = new ChromeDriver();
         Map<String, List<LocalDate>> hutAvailability = new HashMap<>();
