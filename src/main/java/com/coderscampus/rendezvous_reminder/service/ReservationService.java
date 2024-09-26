@@ -26,14 +26,11 @@ public class ReservationService {
     @Autowired
     private AvailabilityDateRepository availabilityDateRepository;
 
-    @Autowired
-    private ReservationService reservationService;
-
     public void initialScan() {
         final LocalDate startDate = LocalDate.of(2024, 12, 13);
         final LocalDate endDate = LocalDate.of(2025, 3, 15);
 
-        // Get the current availability scan
+        // Get the current availability scan (scraping the website)
         Map<String, List<LocalDate>> currentAvailabilityMap = getAvailableDatesForHuts(startDate, endDate);
 
         for (Map.Entry<String, List<LocalDate>> entry : currentAvailabilityMap.entrySet()) {
@@ -44,16 +41,21 @@ public class ReservationService {
             Optional<Hut> hutOpt = hutRepository.findByName(hutName);
             Hut hut = hutOpt.orElseGet(() -> new Hut(hutName));
 
-            hutRepository.save(hut);
+            hutRepository.save(hut);  // Save hut to the database if it's newly created
 
             // Save available dates to the database
-            for (LocalDate date : availableDates) {
-                AvailabilityDate availabilityDate = new AvailabilityDate();
-                availabilityDate.setDate(date);
-                availabilityDate.setHut(hut);
+            saveAvailabilityDates(availableDates, hut);
+        }
+    }
 
-                availabilityDateRepository.save(availabilityDate);
-            }
+    private void saveAvailabilityDates(List<LocalDate> availableDates, Hut hut) {
+        for (LocalDate date : availableDates) {
+            AvailabilityDate availabilityDate = new AvailabilityDate();
+            availabilityDate.setDate(date);
+            availabilityDate.setHut(hut);
+
+            // Save each available date linked to the hut in the database
+            availabilityDateRepository.save(availabilityDate);
         }
     }
 
@@ -88,13 +90,6 @@ public class ReservationService {
                 List<WebElement> cells = row.findElements(By.tagName("td"));
                 List<LocalDate> availableDates = new ArrayList<>();
 
-                Optional<Hut> existingHutOpt = hutRepository.findByName(hutName);
-                Hut hut = existingHutOpt.orElseGet(() -> {
-                    Hut newHut = new Hut();
-                    newHut.setName(hutName);
-                    return hutRepository.save(newHut);
-                });
-
                 for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                     String formattedDate = date.format(formatter);
 
@@ -110,12 +105,6 @@ public class ReservationService {
                             // If the extractedDate matches the formatted date, add the date to the list
                             if (formattedDate.equals(extractedDate)) {
                                 availableDates.add(date);
-
-                                AvailabilityDate availabilityDate = new AvailabilityDate();
-                                availabilityDate.setDate(date);
-                                availabilityDate.setHut(hut);
-
-                                availabilityDateRepository.save(availabilityDate);
                             }
                         }
                     }
