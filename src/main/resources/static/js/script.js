@@ -1,25 +1,22 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const snowContainer = document.querySelector(".snow-container");
+function createSnowflake() {
+  const snowflake = document.createElement("div");
+  snowflake.className = "snowflake";
 
-  function createSnowflake() {
-    const snowflake = document.createElement("div");
-    snowflake.classList.add("snowflake");
+  // Set a random position for the snowflake
+  snowflake.style.left = Math.random() * window.innerWidth + "px";
 
-    // Set random position, size, and animation duration
-    snowflake.style.left = `${Math.random() * 100}vw`; // Random horizontal position
-    snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random fall speed (2-5 seconds)
-    snowflake.style.width = snowflake.style.height = `${
-      Math.random() * 10 + 5
-    }px`; // Random snowflake size
+  // Set a random animation duration for the falling effect
+  const fallDuration = Math.random() * 3 + 2; // Between 2s and 5s
+  snowflake.style.animationDuration = fallDuration + "s";
 
-    snowContainer.appendChild(snowflake);
+  // Add the snowflake to the snow container
+  document.querySelector(".snow-container").appendChild(snowflake);
 
-    // Remove snowflake after it falls out of view
-    setTimeout(() => {
-      snowflake.remove();
-    }, 5000); // Match with animation duration
-  }
+  // Remove the snowflake after it falls
+  setTimeout(() => {
+    snowflake.remove();
+  }, fallDuration * 1000); // Remove after the duration of the fall
+}
 
-  // Continuously create snowflakes every 300ms
-  setInterval(createSnowflake, 300);
-});
+// Create snowflakes at intervals
+setInterval(createSnowflake, 300); // Adjust the frequency of snowflakes

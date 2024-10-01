@@ -58,19 +58,22 @@ body {
 
 .snowflake {
   position: absolute;
-  top: 0px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  opacity: 1;
-  animation: fall linear infinite, sway ease-in-out infinite;
-  z-index: 9999;
+  top: -10px; /* Start just above the visible area */
+  width: 10px; /* Size of the snowflake */
+  height: 10px;
+  background: white; /* Snowflake color */
+  border-radius: 50%; /* Create a circular shape */
+  opacity: 0.8; /* Slightly transparent */
+  animation: fall linear infinite; /* Apply the falling animation */
+  animation-duration: 3s; /* Duration of the fall */
 }
 
 @keyframes fall {
-  to {
-    transform: translateY(100vh);
+  0% {
+    transform: translateY(0); /* Start at the top */
+  }
+  100% {
+    transform: translateY(100vh); /* Move to the bottom of the viewport */
   }
 }
 
