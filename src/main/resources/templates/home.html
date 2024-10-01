@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Rendezvous Reminder</title>
-</head>
-<body>
-<div>
-    <h1>Rendezvous Reminder</h1>
-</div>
-<div>
-    <form th:action="@{/submit-email}" method="post">
-    <p>Enter your email to receive notfications on cancellations:</p>
-    <input type="email" id="sign-up-email" th:field="*{signUpEmail.emailAddress}" required/>
-    <button type="submit">Sign Up</button>
-    </form>
-</div>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Linking external stylesheet -->
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>Rendezvous Reminder</h1>
+      </header>
 
-<div>
-    <form th:action="@{/unsubscribe}" method="post">
-        <p>Enter your email to unsubscribe from notifications:</p>
-        <input type="email" id="unsubscribe-email" th:field="*{unsubscribeEmail.emailAddress}" required/>
-        <button type="submit">Unsubscribe</button>
-    </form>
-</div>
+      <section class="form-section">
+        <form class="email-form" th:action="@{/submit-email}" method="post">
+          <p>Enter your email to receive notifications on cancellations:</p>
+          <input
+            type="email"
+            id="sign-up-email"
+            th:field="*{signUpEmail.emailAddress}"
+            required
+          />
+          <button class="btn" type="submit">Sign Up</button>
+        </form>
+      </section>
 
-
-<!-- Display confirmation message -->
-<!--<p th:if="${message}" th:text="${message}"></p>-->
-</body>
+      <section class="form-section">
+        <form class="email-form" th:action="@{/unsubscribe}" method="post">
+          <p>Enter your email to unsubscribe from notifications:</p>
+          <input
+            type="email"
+            id="unsubscribe-email"
+            th:field="*{unsubscribeEmail.emailAddress}"
+            required
+          />
+          <button class="btn unsubscribe-btn" type="submit">Unsubscribe</button>
+        </form>
+      </section>
+    </div>
+  </body>
 </html>
