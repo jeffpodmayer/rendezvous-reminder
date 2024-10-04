@@ -23,9 +23,6 @@ public class ReservationService {
     @Autowired
     private HutRepository hutRepository;
 
-
-
-
     @Autowired
     private AvailabilityDateRepository availabilityDateRepository;
 

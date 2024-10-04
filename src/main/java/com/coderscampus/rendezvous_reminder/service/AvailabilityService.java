@@ -7,6 +7,7 @@ import com.coderscampus.rendezvous_reminder.repository.AvailabilityDateRepositor
 import com.coderscampus.rendezvous_reminder.repository.EmailRepository;
 import com.coderscampus.rendezvous_reminder.repository.HutRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -33,6 +34,7 @@ public class AvailabilityService {
     @Autowired
     private EmailRepository emailRepository;
 
+    @Scheduled(fixedDelay = 600000)
     public void checkAvailability() {
         StringBuilder emailContent = new StringBuilder();
 
